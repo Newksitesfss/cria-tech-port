@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>CriaTech — Inovação em Código</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -16,6 +16,7 @@
       color:white;
       height:100%;
       font-family:'Poppins',sans-serif;
+      touch-action:manipulation;
     }
 
     .hero {
@@ -26,8 +27,8 @@
       align-items:center;
       justify-content:center;
       flex-direction:column;
-      overflow:hidden;
       text-align:center;
+      overflow:hidden;
     }
 
     canvas {
@@ -40,27 +41,48 @@
     }
 
     h1 {
-      font-size:7rem;
       font-weight:900;
-      letter-spacing:4px;
+      letter-spacing:2px;
       background:linear-gradient(90deg,#00b7ff,#00e6ff,#008cff);
       -webkit-background-clip:text;
       -webkit-text-fill-color:transparent;
-      text-shadow:0 0 50px #00b7ff,0 0 120px #0077ff;
+      text-shadow:0 0 40px #00b7ff,0 0 80px #0077ff;
       animation:glow 4s ease-in-out infinite alternate, pulse 3s ease-in-out infinite;
       z-index:2;
       opacity:0;
       transform:scale(0.8);
+      margin:0 1rem;
+    }
+
+    @media (min-width: 1024px) {
+      h1 { font-size:7rem; }
+    }
+
+    @media (max-width: 1023px) and (min-width: 600px) {
+      h1 { font-size:4rem; }
+    }
+
+    @media (max-width: 599px) {
+      h1 { font-size:2.5rem; }
     }
 
     p {
       z-index:2;
-      font-size:1.5rem;
       color:#d9f4ff;
       margin-top:1rem;
-      text-shadow:0 0 25px rgba(0,183,255,.5);
+      text-shadow:0 0 20px rgba(0,183,255,.6);
       opacity:0;
       transform:translateY(20px);
+      padding:0 1rem;
+      line-height:1.5;
+    }
+
+    @media (min-width: 1024px) {
+      p { font-size:1.5rem; }
+    }
+
+    @media (max-width: 599px) {
+      p { font-size:1rem; }
     }
 
     .social {
@@ -68,18 +90,22 @@
       margin-top:2rem;
       opacity:0;
       transform:translateY(20px);
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:1rem;
     }
 
     .social a {
       color:#00b7ff;
       text-decoration:none;
       font-weight:600;
-      font-size:1.4rem;
       border:2px solid #00b7ff;
-      padding:.6rem 1.5rem;
+      padding:.6rem 1.2rem;
       border-radius:50px;
       transition:.3s;
-      box-shadow:0 0 25px rgba(0,183,255,.5);
+      box-shadow:0 0 20px rgba(0,183,255,.5);
+      font-size:1rem;
     }
 
     .social a:hover {
@@ -92,8 +118,8 @@
       position:fixed;
       top:0;
       left:0;
-      width:20px;
-      height:20px;
+      width:15px;
+      height:15px;
       border-radius:50%;
       background:#00b7ff;
       pointer-events:none;
@@ -108,27 +134,38 @@
 
     @keyframes pulse {
       0%,100% { transform:scale(1); }
-      50% { transform:scale(1.1); }
+      50% { transform:scale(1.05); }
     }
 
     #playAudio {
       position:fixed;
-      top:20px;
+      bottom:20px;
       right:20px;
       z-index:100;
-      background:rgba(0,30,60,.7);
+      background:rgba(0,30,60,.8);
       color:#00b7ff;
       border:2px solid #00b7ff;
-      padding:.5rem 1.2rem;
+      padding:.6rem 1rem;
       border-radius:50px;
       cursor:pointer;
       transition:.3s;
+      font-size:1rem;
+      backdrop-filter:blur(5px);
     }
 
     #playAudio:hover {
       background:#00b7ff;
       color:#000716;
       box-shadow:0 0 25px #00b7ff;
+    }
+
+    @media (max-width:600px){
+      #playAudio {
+        bottom:15px;
+        right:15px;
+        font-size:.9rem;
+        padding:.5rem .8rem;
+      }
     }
   </style>
 </head>
@@ -137,12 +174,14 @@
     <canvas id="bg"></canvas>
     <h1 id="title">CriaTech</h1>
     <p id="subtitle">Desenvolvemos sites, sistemas e automações incríveis</p>
+
     <div class="social" id="social">
       <a href="https://www.instagram.com/cria.tech_/" target="_blank">@cria.tech_</a>
-      <a href="https://newksitesfss.github.io/cria-tech/" target="_blank" style="margin-left:1rem">🌐 Site Oficial</a>
+      <a href="https://newksitesfss.github.io/cria-tech/" target="_blank">🌐 Site Oficial</a>
     </div>
+
+    <button id="playAudio">🔊 Ativar Som</button>
     <div class="cursor" id="cursor"></div>
-    <button id="playAudio">🔊 Ativar Som Futurista</button>
   </div>
 
   <audio id="bg-music" src="futuristic.mp3" loop></audio>
@@ -151,10 +190,10 @@
     // Cursor animado
     const cursor = document.getElementById('cursor');
     document.addEventListener('mousemove', e => {
-      gsap.to(cursor, {x:e.clientX, y:e.clientY, duration:0.15, ease:'power2.out'});
+      gsap.to(cursor, {x:e.clientX, y:e.clientY, duration:0.15});
     });
 
-    // Fundo 3D (dragão digital)
+    // Fundo 3D responsivo
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('bg'), alpha:true});
@@ -171,12 +210,12 @@
     const dragon = new THREE.Mesh(dragonGeometry, dragonMaterial);
     scene.add(dragon);
 
-    const particlesCount = 900;
+    const particlesCount = 700;
     const positions = new Float32Array(particlesCount * 3);
     for(let i=0;i<particlesCount*3;i++){ positions[i] = (Math.random() - 0.5) * 200; }
     const particlesGeometry = new THREE.BufferGeometry();
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    const particlesMaterial = new THREE.PointsMaterial({color:0x00b7ff, size:0.7, transparent:true, opacity:0.7});
+    const particlesMaterial = new THREE.PointsMaterial({color:0x00b7ff, size:0.6, transparent:true, opacity:0.6});
     const particles = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particles);
 
@@ -186,7 +225,7 @@
       requestAnimationFrame(animate);
       dragon.rotation.x += 0.01;
       dragon.rotation.y += 0.012;
-      particles.rotation.y += 0.0015;
+      particles.rotation.y += 0.001;
       renderer.render(scene, camera);
     }
     animate();
@@ -204,11 +243,18 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    // Som futurista
+    // Som compatível com iOS
     const audio = document.getElementById("bg-music");
-    document.getElementById("playAudio").addEventListener("click", () => {
-      audio.play().catch(() => {});
-      document.getElementById("playAudio").style.display = "none";
+    const playButton = document.getElementById("playAudio");
+
+    playButton.addEventListener("touchstart", () => {
+      audio.play().catch(()=>{});
+      playButton.style.display="none";
+    });
+
+    playButton.addEventListener("click", () => {
+      audio.play().catch(()=>{});
+      playButton.style.display="none";
     });
   </script>
 </body>
